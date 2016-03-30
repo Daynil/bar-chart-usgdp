@@ -27,14 +27,23 @@ function plotData(jsonData) {
 	let yScale = d3.scale.linear()
 					.domain([0, d3.max(dataset, d => d[1])])
 					.range([h, 0]);
-					
-	let xAxisTicks = d3.range(dataset.length).filter(num => num % 10 === 0);
-	let xAxisYears = extractYears(dataset);
-	let xAxis = d3.svg.axis().scale(xScale).orient('bottom').tickValues(xAxisYears);
-	let yAxis = d3.svg.axis().scale(yScale).orient('left').ticks(5);
+	
+	let dataYears = extractYears(dataset);
+	let xAxisFormat = d3.format("04d");
+	let xAxisScale = d3.scale.linear()
+						.domain([dataYears[0], dataYears[dataYears.length - 1]])
+						.range([padding, w - padding]);
+	
+	let xAxisTicks = _.sortedUniq(dataYears)
+						.filter(num => num % 5 === 0);
+	
+	let xAxis = d3.svg.axis().scale(xAxisScale).orient('bottom').tickValues(xAxisTicks).tickFormat(xAxisFormat);
+	let yAxis = d3.svg.axis().scale(yScale).orient('left').ticks(9);
 	let svg = d3.select('#chart')
 				.append('svg')
+				.style('margin-top', 10 + 'px')
 				.style('padding-left', 30)
+				.style('padding-top', 3)
 				.attr('width', 650)
 				.attr('height', 400);
 				
@@ -47,6 +56,22 @@ function plotData(jsonData) {
 		.attr('class', 'y axis')
 		.attr('transform', `translate(${padding}, 0)`)
 		.call(yAxis);
+		
+	svg.append('text')
+		.attr('class', 'x label')
+		.attr('text-anchor', 'end')
+		.attr('x', w / 2)
+		.attr('y', h + padding + 8)
+		.text('Year');
+		
+	svg.append('text')
+		.attr('class', 'y label')
+		.attr('text-anchor', 'end')
+		.style('font-size', 8 + 'px')
+		.attr('x', 0)
+		.attr('y', 35)
+		.attr('transform', 'rotate(-90)')
+		.text('US GDP (billions of dollars)')
 				
 	svg.selectAll('rect')
 		.data(dataset)
@@ -58,13 +83,23 @@ function plotData(jsonData) {
 		.attr('height', d => h - yScale(d[1]));
 }
 
-function extractYears(dataset) {
+/*function extractYears(dataset) {
 	let numericalYearArray = []
 	dataset.map(set => {
 		let yearOnlyNum = parseInt(set[0].substring(0, 4));
 		if (yearOnlyNum % 5 === 0) numericalYearArray.push(yearOnlyNum);
 	});
 	numericalYearArray = _.sortedUniq(numericalYearArray);
+	console.log(numericalYearArray);
+	return numericalYearArray;
+}*/
+
+function extractYears(dataset) {
+	let numericalYearArray = []
+	dataset.map(set => {
+		let yearOnlyNum = parseInt(set[0].substring(0, 4));
+		numericalYearArray.push(yearOnlyNum);
+	});
 	console.log(numericalYearArray);
 	return numericalYearArray;
 }

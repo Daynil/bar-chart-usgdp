@@ -2,7 +2,7 @@
 	margin: 0 auto;
 	margin-top: 30px;
 	width: 650px;
-	height: 430px;
+	height: 450px;
 	box-shadow: 3px 3px 14px hsl(0, 0%, 0%);
 	text-align: center;
 	font-family: 'Raleway';
@@ -30,7 +30,7 @@ rect:hover {
 	font-size: 8px;
 }
 
-h3 {
-	margin-top: 10px;
+#chart-title {
+	padding-top: 5px;
 	font-weight: 300;
 }
